@@ -1,0 +1,160 @@
+﻿@model BookStore.Models.Book
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2></h2>
+
+<div>
+    <div class="row">
+        <div class="col-md-2">
+            <img classs="book-img" src="@Html.DisplayFor(model => model.ImageUrl)" alt="Book Image" width="180" height="180">
+        </div>
+
+        <div class="col-md-5">
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.Title)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Title)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Genre)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Genre)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Price)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Price)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Author)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Author)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Publisher)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Publisher)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Quantity)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Quantity)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.ReleaseDate)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.ReleaseDate)
+                </dd>
+            </dl>
+
+        </div>
+
+    </div>
+
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.BookId" class="btn button-image editBookButton">Edit</a> |
+        <a asp-action="Index" class="btn button-image backBookButton">Back to List</a>
+    </div>
+</div>
+
+<button type="button" class="btn btn-lg button-image recoButton" data-toggle="modal" data-target="#shopping-wheel-modal" id="related-button">Get Some Recomandations</button>
+
+
+<!-- Recomandations Modal -->
+<div class="modal fade" id="shopping-wheel-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+               <div id="amount-reco"></div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div id="main-model" class="row modal-body">
+               
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <!----<button id="related-button" type="button" class="btn btn-primary">Order Now!</button>-->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script>
+        $("#related-button").click(function () {
+            LoadRelatedBooks();
+        });
+        function LoadRelatedBooks() {
+            var bid = @Html.DisplayFor(model => model.BookId);
+            $.ajax({
+                url: '/Books/Related/' + bid,
+                type: 'GET',
+                dataType: 'json',
+                success: function (list) {
+                    if (list == "fail") {
+                        alert('error');
+                    }
+                    else {
+						$('#amount-reco').empty().append(" We Found " + list.length + " Recomendations That you might like");
+						$("#main-model").removeData();
+
+                        var counter = 0;
+                        for (var i in list) {
+                            console.log(i);
+                            
+                            if (i % 5 === 0) {
+                                counter = i;
+                                addRow(i);
+                            }
+						}
+						createBookRecomendation(list, counter);
+
+                    }
+                }
+            })
+        }
+        function createBookRecomendation(list,rowId) {
+            for (i in list) {
+                var name = list[i].title;
+                console.log(list[i])
+                var imgUrlID = list[i].url;
+                //var img = document.getElementById(list[i].url);
+                console.log(list[i].title);
+                var html =
+                    "<div class='col-md-2' id='modal-book-img1'><img classs='book-img' id='imgBooks' onclick='redirect(" + list[i].id+")' src='"
+                    + imgUrlID +
+                    "' alt='Book Image' width='100' hight='100'></div>"
+                var id = "#row-id-" + rowId;
+                $(id).append(html);
+            }
+        };
+
+        function addRow(id)
+        {
+            
+            var h = "<div class='row col-md-12' id='row-id-"+id+"'></div>";
+            console.log(h)
+            $("#main-model").append(h);
+
+        }
+
+        function redirect(id) {
+            window.location.href = '/Books/details/' + id;
+        }
+    </script>
+}

@@ -1,0 +1,117 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<video width="1100" autoplay="autoplay" loop>
+    <source src="~/video/book.mp4" type="video/mp4" />
+</video>
+
+
+<div class="row sp-chart" >
+    <div id="chart">
+
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script>
+        function LoadBestSellers() {
+            $.ajax({
+                url: '/Books/BestSellers',
+                type: 'GET',
+                dataType: 'json',
+                success: function (list) {
+                    if (list == "fail") {
+                        alert('error');
+                    }
+                    else {
+
+                        function getRatio(side) {
+                            return ((margin[side] / width) * 100) + '%'
+                        }
+                        // Simple example dataset
+                        var letters = []
+                        var numbers = []
+                        $.each(list, function (i) {
+                            $("#bestsellers").append("<tr>" +
+                                "<td>" + list[i].id + "</td>" +
+                                "<td>" + list[i].counter + "</td>" +
+                                "</tr>");
+                            letters.push(list[i].id);
+                            numbers.push(list[i].counter);
+                        })
+
+                        var margin = { left: 50, top: 10, right: 50, bottom: 30 }
+                        var width = 1000
+                        var height = 200
+                        var marginRatio = {
+                            left: getRatio('left'),
+                            top: getRatio('top'),
+                            right: getRatio('right'),
+                            bottom: getRatio('bottom')
+                        }
+                        var barWidth = width / numbers.length
+
+                        var svg = d3.select('div#chart')
+                            .append('div')
+                            .attr('id', 'svg-container')
+                            .append('svg')
+                            .style('padding', marginRatio.top + ' ' + marginRatio.right + ' ' + marginRatio.bottom + ' ' + marginRatio.left)
+                            .attr('preserveAspectRatio', 'xMinYMin meet')
+                            .attr('viewBox', '0 0 ' + (width + margin.left + margin.right) + ' ' + (height + margin.top + margin.bottom))
+                            .attr('id', 'svg-content-responsive')
+
+                        var x = d3.scale.ordinal()
+                            .domain(letters)
+                            .rangeRoundBands([0, width], 0.1, 0.1)
+
+                        var xAxis = d3.svg.axis()
+                            .scale(x)
+                            .orient('bottom')
+
+
+                        var y = d3.scale.linear()
+                            .domain([d3.max(numbers), 0])
+                            .range([0, height])
+
+                        var yAxis = d3.svg.axis()
+                            .scale(y)
+                            .orient('left')
+
+                        console.log(numbers);
+                        var bar = svg.selectAll('g')
+                            .data(numbers)
+                            .enter()
+                            .append('g')
+                            .attr('transform', function (d, i) { return 'translate(' + i * barWidth + ', 0)' })
+
+                        // Add x axis to svgContainer
+                        svg.append('g')
+                            .attr('class', 'x axis')
+                            .call(xAxis)
+                            .attr('transform', 'translate(0,' + height + ')')
+
+                        // Add y axis
+                        svg.append('g')
+                            .attr('class', 'y axis')
+                            .call(yAxis)
+
+
+                        bar.append('rect')
+                            .attr('class', 'bar')
+                            .attr('width', barWidth - 1)
+                            .attr('y', function (d) { return y(d) })
+                            .attr('height', function (d) { return height - y(d) })
+                        
+
+                    }//Fermeture Else
+                }//Fermeture Success
+
+            })
+        }
+        LoadBestSellers()
+    </script>
+
+
+}

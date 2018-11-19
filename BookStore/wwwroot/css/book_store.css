@@ -1,0 +1,75 @@
+﻿
+.book-item {
+    margin:5px;
+}
+
+#modal-book-img1 {
+    margin-right: 10px;
+}
+
+img#modal-book-img {
+    margin-right: 10px;
+    display: block;
+}
+
+img#imgBooks {
+    cursor: pointer;
+}
+
+/* CSS that makes chart responsive */
+.sp-chart {
+    margin: 20px;
+    display: block;
+}
+
+#chart {
+    max-width: 1100px;
+    width: 100%;
+    max-height: 200px;
+    margin: 0 auto;
+}
+
+#svg-container {
+    position: relative;
+    width: 100%;
+    margin-bottom: 50px;
+    overflow: hidden;
+}
+
+.svg-content-responsive {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+/* CSS that styles the chart */
+rect {
+    fill: lightgray;
+}
+
+    rect:hover {
+        fill: brown;
+    }
+
+.axis text {
+    font: 14px sans-serif;
+    margin-bottom: 20px;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #333;
+}
+
+
+.map {
+    display: block;
+    margin-top: 200px;
+}
+
+video {
+    object-fit: fill;
+    max-height: 300px;
+    border-bottom-left-radius: 40px;
+    border-bottom-right-radius: 40px;
+}

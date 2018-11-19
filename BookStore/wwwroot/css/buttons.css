@@ -1,0 +1,89 @@
+﻿
+.button-image:before {
+    content: "";
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    margin-right: 5px;
+    vertical-align: text-top;
+    background-color: transparent;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.button-image-big:before {
+    content: "";
+    width: 50px;
+    height: 50px;
+    display: inline-block;
+    margin-right: 5px;
+    vertical-align: text-top;
+    background-color: transparent;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.button-image:hover {
+    background-color: #b8b894
+}
+
+.input-group-addon {
+    background-color: ButtonFace;
+}
+
+
+.pluseButton:before {
+    background-image: url(https://www.fxg.co.il/wp-content/uploads/2018/01/green-plus.png);
+    background-size: 16px 16px;
+}
+
+.minButton:before {
+    background-image: url(https://openclipart.org/image/800px/svg_to_png/91861/Remove-349235435.png);
+    background-size: 16px 16px;
+}
+
+.searchButton:before {
+    background-image: url(https://upload.wikimedia.org/wikipedia/commons/9/95/Simpleicons_Interface_magnifier-tool-on-earth-globe.svg);
+    background-size: 30px 30px;
+}
+
+.wheelShopButton:before {
+    background-image: url(https://cdn2.iconfinder.com/data/icons/supermarket-7/64/Supermarket-01-512.png);
+    background-size: 30px 30px;
+}
+
+.createBookButton:before {
+    background-image: url(https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Indian_Election_Symbol_Book.svg/522px-Indian_Election_Symbol_Book.svg.png);
+    background-size: 16px 16px;
+}
+
+.editBookButton:before {
+    background-image: url(https://image.flaticon.com/icons/png/512/38/38609.png);
+    background-size: 16px 16px;
+}
+
+.delBookButton:before {
+    background-image: url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHJAhygoEzKwmOJW8BLYRl8Qo896gdt1-cxvcEP-lJnr6uY6Xv);
+    background-size: 16px 16px;
+}
+
+.detBookButton:before {
+    background-image: url(https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Magnifier-search-interface-circular-button.svg/2000px-Magnifier-search-interface-circular-button.svg.png );
+    background-size: 16px 16px;
+}
+
+.userBookButton:before {
+    background-image: url(http://pngimages.net/sites/default/files/user-png-image-15189.png);
+    background-size: 16px 16px;
+}
+
+.backBookButton:before {
+    background-image: url(http://downloadicons.net/sites/default/files/returns--button-icon-72032.png);
+    background-size: 16px 16px;
+}
+
+
+.recoButton:before {
+    background-image: url(https://cdn0.iconfinder.com/data/icons/ui-icons-pack/100/ui-icon-pack-08-512.png);
+    background-size: 25px 25px;
+}

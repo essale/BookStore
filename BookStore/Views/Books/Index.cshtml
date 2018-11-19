@@ -1,0 +1,221 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+@model IEnumerable<BookStore.Models.Book>
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<h2></h2>
+
+<!-- Order Modal -->
+<div class="modal fade" id="shopping-wheel-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="main-model" class="row modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button id="order-button" type="button" class="btn btn-primary">Order Now!</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@if (SignInManager.IsSignedIn(User))
+{
+<p>
+		<form>
+			@if (this.User.IsInRole("Admin"))
+			{
+				<button class="btn button-image createBookButton" asp-action="Create">Create New Book</button>
+			}
+
+			<button type="button" class="btn button-image wheelShopButton" data-toggle="modal" data-target="#shopping-wheel-modal" onclick="createSubmitterForShoppingWheel()">submit order</button>
+		</form>
+</p>
+}
+
+<form asp-controller="Books" asp-action="Index">
+    <p>
+
+        <div class="input-group stylish-input-group">
+            <input type="text" name="title" value="" class="form-control" placeholder="Title:" />
+            <input type="text" name="author" value="" class="form-control" placeholder="Author:" />
+            <input type="text" name="genre" value="" class="form-control" placeholder="Genre:" />
+            <span class="input-group-addon">
+                <button class="btn button-image-big searchButton" type="submit"></button>
+            </span>
+        </div>
+        <!--<input type="submit" value="Filter" />-->
+    </p>
+</form>
+
+@foreach (var item in Model)
+{
+    <div class="row book-item">
+		<div class="col-md-12">
+			<div class="col-md-3">
+				<img id="img-@item.BookId" classs="book-img" src="@item.ImageUrl" alt="Book Image" width="180" height="180">
+			</div>
+			<div class="col-md-3">
+				<p id="name-@item.BookId"><b>Book Name: </b> @item.Title</p>
+				<p><b>Author: </b> @item.Author</p>
+				<p><b>Publisher: </b> @item.Publisher</p>
+				<p><b>Genre: </b> @item.Genre</p>
+				<p><b>ReleaseDate: </b> @item.ReleaseDate</p>
+			</div>
+            <div class="col-md-3">
+                <p><b>Price: </b> @item.Price</p>
+                <p><b>Quantity: </b> @item.Quantity</p>
+                @if (@item.Quantity > 0)
+                {
+                    <button class="btn button-image pluseButton" onclick='new Book(@item.BookId,@item.Quantity).addToList();'></button>
+                    <button class="btn button-image minButton" onclick='new Book(@item.BookId,@item.Quantity).reduceQuantity();'></button><br><br>
+                }
+                <p><b>In List:</b><span id="bo-@item.BookId">0</span></p>
+            </div>
+
+			<div class="col-md-3">
+				@if (this.User.IsInRole("Admin"))
+				{
+					<div class="row"><a class="btn button-image editBookButton" asp-action="Edit" asp-route-id="@item.BookId">Edit</a> </div>
+					<div class="row"><a class="btn button-image delBookButton" asp-action="Delete" asp-route-id="@item.BookId">Delete</a> </div>
+				}
+					<div class="row"><a class="btn button-image detBookButton" asp-action="Details" asp-route-id="@item.BookId">Details</a></div>
+			</div>
+		</div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        var bookList = {};
+        function saveBookList() {
+            sessionStorage.setItem('list', JSON.stringify(bookList));
+        }
+        function loadFromSessionStorage() {
+            bookList = JSON.parse(sessionStorage.getItem('list'));;
+            if (bookList == null) bookList = {};
+            else {
+                for (id in bookList) {
+                    changeBookOrderValue(id, bookList[id]);
+                }
+            }
+        }
+        loadFromSessionStorage();
+
+        function resetOrder()
+        {
+            for (id in bookList)
+            {
+                delete bookList[id];
+                changeBookOrderValue(this.id, 0);
+            }
+            
+            saveBookList();
+        }
+
+        function createSubmitterForShoppingWheel() {
+            $("#main-model").empty();
+            for (id in bookList) {
+                var imgUrlID = "#img-" + id;
+                var img = document.getElementById(imgUrlID);
+                console.log($(imgUrlID).attr('src'));
+                var html = "<div class='col-md-2' id='modal-book-img1'><img classs='book-img' src='" + $(imgUrlID).attr('src') + "' alt='Book Image' width='100' hight='100'><p><b>Quantity:</b>" + bookList[id] + "</p> </div>"
+                $('#main-model').append(html);
+            }
+
+        };
+
+        //Using Prototype
+        function Book(id, quantity) {
+            this.id = id;
+            this.quantity = quantity;
+
+            this.addToList = function () {
+                if (this.quantity <= 0) { return; }
+                if (typeof checkID(id) === 'undefined') {
+                    console.log(1)
+                    bookList[this.id] = 1;
+                    changeBookOrderValue(this.id, 1)
+                }
+                else {
+                    if (bookList[this.id] < quantity) {
+                        bookList[this.id]++;
+                        changeBookOrderValue(this.id, bookList[this.id]);
+                    }
+                }
+                saveBookList();
+            }
+
+            this.reduceQuantity = function () {
+                if (bookList[this.id] == 1) {
+                    delete bookList[this.id];
+                    changeBookOrderValue(this.id, 0);
+                }
+                else if (bookList[this.id] > 1) {
+                    bookList[this.id]--;
+                    changeBookOrderValue(this.id, bookList[this.id]);
+
+                }
+                saveBookList();
+            }
+        }
+
+        var checkID = function (value, key) {
+            //console.log(bookList);
+            return bookList[value];
+        };
+
+        function changeBookOrderValue(id, value) {
+            //console.log($("#bo-" + id).text(value))
+
+            $("#bo-" + id).text(value);
+        }
+
+        function pageRefresh() { location.reload(); }
+        $("#order-button").click(function () {
+            var data1 =
+            {
+                UserName: "@UserManager.GetUserName(User)",
+                //{BookID: ***, quantity: ***}
+                BookData: bookList
+			}
+			//data1 = "string"
+			data1 = { booksorder: JSON.stringify(data1) }
+			//data1 = { booksorder:  data1 }
+            var url = '../Orders/Insert';
+            console.log(data1);
+            $.ajax({
+                type: "POST",
+                url: url,
+				data: data1,
+				dataType:'json',
+                complete: function (result) {
+                    //console.log('Data received: ');
+                    console.log(result.responseText);
+                    if (result.responseText === "saved")
+                    {
+                        resetOrder();
+                        pageRefresh();
+                    }
+                }
+            });
+        });
+
+
+    </script>
+
+}
